@@ -1,6 +1,5 @@
 import axios from "axios";
 import { TELEGRAM_API_BASEURL } from "./constants.js";
-import { require } from "./utils.js";
 import { TELEGRAM_BOT_TOKEN } from "./config.js";
 
 export const getFileData = async (filePath) => {
