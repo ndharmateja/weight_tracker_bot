@@ -35,7 +35,7 @@ bot.on(message("document"), documentHandler);
 // Launch bot
 if (isProd()) {
     logger.info("launching bot in prod mode");
-    const webhookDomain = "https://dt-first-bot.onrender.com";
+    const webhookDomain = "https://weight-tracker-telegram-bot.onrender.com";
     bot.launch({ webhook: { domain: webhookDomain, port: PORT } }).then(() =>
         logger.info("Webhook bot listening on port", PORT)
     );
