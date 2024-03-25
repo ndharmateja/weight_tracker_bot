@@ -109,7 +109,7 @@ const writeDataToGoogleSheets = async (
 ) => {
     // Write data
     const numRows = values.length;
-    const result = await sheets.spreadsheets.values.update({
+    await sheets.spreadsheets.values.update({
         spreadsheetId,
         range: `${sheetName}!A1:B${numRows}`,
         requestBody: {
@@ -118,7 +118,6 @@ const writeDataToGoogleSheets = async (
         },
         valueInputOption: "USER_ENTERED",
     });
-    logger.info(result.data);
 };
 
 /**
