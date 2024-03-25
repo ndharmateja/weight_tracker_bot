@@ -5,6 +5,7 @@ import {
     helpHandler,
     settingsHandler,
     startHandler,
+    documentHandler,
 } from "./handlers/command_handlers.js";
 import { PORT, TELEGRAM_BOT_TOKEN, isDev, isProd } from "./utils/config.js";
 import logger from "./utils/logger.js";
@@ -29,6 +30,9 @@ bot.on(message("text"), (ctx) => {
     logger.info("text handler");
     ctx.reply(`You sent '${ctx.message.text}'`);
 });
+
+// Handle document messages
+bot.on(message("document"), documentHandler);
 
 // Launch bot
 if (isProd()) {
