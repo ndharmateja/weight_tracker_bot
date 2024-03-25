@@ -34,6 +34,11 @@ export const addHandler = async (ctx) => {
     ctx.reply(`You (${firstName}) entered /add`);
 };
 
+export const textHandler = async (ctx) => {
+    logger.info("text handler");
+    ctx.reply(`You sent '${ctx.message.text}'`);
+};
+
 export const documentHandler = async (ctx) => {
     try {
         // Parse message

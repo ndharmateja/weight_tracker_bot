@@ -6,6 +6,7 @@ import {
     settingsHandler,
     startHandler,
     documentHandler,
+    textHandler,
 } from "./handlers/command_handlers.js";
 import { PORT, TELEGRAM_BOT_TOKEN, isDev, isProd } from "./utils/config.js";
 import logger from "./utils/logger.js";
@@ -26,10 +27,7 @@ bot.command("add", addHandler);
 bot.on(message("sticker"), (ctx) => ctx.reply("👍"));
 
 // Text messages
-bot.on(message("text"), (ctx) => {
-    logger.info("text handler");
-    ctx.reply(`You sent '${ctx.message.text}'`);
-});
+bot.on(message("text"), textHandler);
 
 // Handle document messages
 bot.on(message("document"), documentHandler);
