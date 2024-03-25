@@ -3,6 +3,8 @@ import { getAuthClient, getSheetName } from "../utils/google_utils.js";
 import logger from "../utils/logger.js";
 import { CSV_MIME_TYPE } from "../utils/constants.js";
 import { getFileData, getFilePath } from "../utils/document_handler_utils.js";
+import { require } from "../utils/utils.js";
+const fs = require("fs").promises;
 
 export const startHandler = (ctx) => {
     const {
@@ -44,21 +46,35 @@ export const documentHandler = async (ctx) => {
             },
         } = ctx.message;
 
-        // Get file path
-        const filePath = await getFilePath(fileId);
-        console.log(`Got the file path: ${filePath}`);
+        // save file locally
+        await saveFile(filename, mimeType, fileId);
 
-        // Get file data
-        const fileData = await getFileData(filePath);
-        console.log("Got the file data");
+        // delete file
+        await fs.unlink(filename);
+        logger.info(`Deleted ${filename}`);
 
-        // Write to xls file
-        await fs.writeFile(filename, fileData);
-        console.log(`${filename} saved`);
-
-        const replyMessage = filePath;
+        const replyMessage = filename;
         ctx.reply(replyMessage);
     } catch (error) {
         ctx.reply(`Error: ${error.message}`);
     }
+};
+
+const saveFile = async (filename, mimeType, fileId) => {
+    // Check mime type
+    if (mimeType !== CSV_MIME_TYPE) {
+        throw new Error("Only csv documents accepted for now.");
+    }
+
+    // Get file path
+    const filePath = await getFilePath(fileId);
+    logger.info(`Got the file path: ${filePath}`);
+
+    // Get file data
+    const fileData = await getFileData(filePath);
+    logger.info("Got the file data");
+
+    // Write to csv file
+    await fs.writeFile(filename, fileData);
+    logger.info(`${filename} saved`);
 };
