@@ -57,7 +57,7 @@ export const documentHandler = async (ctx) => {
 
         // Initial messages
         ctx.reply(
-            "Initialized adding table. Might take a few seconds. Wait for confirmation."
+            "Initialized adding data. Might take a few seconds. Wait for confirmation."
         );
 
         // Write to google sheets
@@ -73,14 +73,32 @@ export const documentHandler = async (ctx) => {
             records
         );
 
+        // reply with chart
+        await replyWeightChart(ctx, records);
+
         // Reply message
-        ctx.reply(
+        ctx.replyWithMarkdownV2(
             `Successfully added data\n\nClick [link](${spreadsheetUrl}) to open`
         );
     } catch (error) {
         logger.error(error);
         ctx.reply(`Error: ${error.message}`);
     }
+};
+
+const replyWeightChart = async (ctx, records) => {
+    // get image data
+    imageData = "";
+
+    // save to file
+    const imageFilename = "image.png";
+    await fs.writeFile(imageFilename, imageData);
+
+    // send photo as reply
+    // await ctx.replyWithPhoto({ source: imageFilename });
+
+    // delete image file
+    await fs.unlink(imageFilename);
 };
 
 const writeDataToGoogleSheets = async (
