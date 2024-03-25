@@ -5,6 +5,7 @@ import { CSV_MIME_TYPE } from "../utils/constants.js";
 import { getFileData, getFilePath } from "../utils/document_handler_utils.js";
 import { require } from "../utils/utils.js";
 const fs = require("fs").promises;
+import { parse } from "csv-parse/sync";
 
 export const startHandler = (ctx) => {
     const {
@@ -48,6 +49,14 @@ export const documentHandler = async (ctx) => {
 
         // save file locally
         await saveFile(filename, mimeType, fileId);
+
+        // read lines
+        const filedata = await fs.readFile(filename);
+        const records = parse(filedata, {
+            columns: true,
+            skip_empty_lines: true,
+        });
+        logger.info(records);
 
         // delete file
         await fs.unlink(filename);
