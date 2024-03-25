@@ -43,8 +43,13 @@ export const documentHandler = async (ctx) => {
             document: { mime_type: mimeType, file_id: fileId },
         } = ctx.message;
 
+        // Check mime type
+        if (mimeType !== CSV_MIME_TYPE) {
+            throw new Error("Only csv documents accepted for now.");
+        }
+
         // save file locally
-        const records = await getRecordsFromCsv(mimeType, fileId);
+        const records = await parseRecordsFromCsv(fileId);
         logger.info(records);
 
         ctx.reply("received 👍🏽");
@@ -53,12 +58,18 @@ export const documentHandler = async (ctx) => {
     }
 };
 
-const getRecordsFromCsv = async (mimeType, fileId) => {
-    // Check mime type
-    if (mimeType !== CSV_MIME_TYPE) {
-        throw new Error("Only csv documents accepted for now.");
-    }
-
+/**
+ * retrieves csv data from telegram and parses the csv file
+ * to create a 2d array of strings
+ * @param {*} fileId
+ * @returns: [
+ *  [ 'Date', 'Weight' ],
+ *  [ '2022-09-25', '105.5' ],
+ *  [ '2022-09-26', '105.7' ],
+ *  ...
+ * ]
+ */
+const parseRecordsFromCsv = async (fileId) => {
     // Get file path
     const filePath = await getFilePath(fileId);
     logger.info(`Got the file path: ${filePath}`);
@@ -67,16 +78,9 @@ const getRecordsFromCsv = async (mimeType, fileId) => {
     const fileData = await getFileData(filePath);
     logger.info("Got the file data");
 
-    // Parse csv
-    const records = parse(fileData, {
-        columns: true,
-        skip_empty_lines: true,
-    });
-
-    // convert list of objects into a 2d array
-    // to add to google sheets
-    return [
-        ["Date", "Weight"],
-        ...records.map((record) => [record.Date, record.Weight]),
-    ];
+    // parse csv
+    return fileData
+        .toString()
+        .split("\n")
+        .map((line) => line.split(","));
 };
