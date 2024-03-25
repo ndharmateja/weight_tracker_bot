@@ -1,6 +1,12 @@
 import { google } from "googleapis";
 
-export const getAuthClient = async () => {
+export const getSheets = async () => {
+    const client = await getAuthClient();
+    const sheets = google.sheets({ version: "v4", auth: client });
+    return sheets;
+};
+
+const getAuthClient = async () => {
     const auth = new google.auth.GoogleAuth({
         keyFile: "keys.json", //the key file
         scopes: "https://www.googleapis.com/auth/spreadsheets",

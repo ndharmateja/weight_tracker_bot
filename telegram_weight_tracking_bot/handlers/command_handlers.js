@@ -1,5 +1,4 @@
-import { google } from "googleapis";
-import { getAuthClient, getSheetName } from "../utils/google_utils.js";
+import { getSheets, getSheetName } from "../utils/google_utils.js";
 import logger from "../utils/logger.js";
 import { CSV_MIME_TYPE } from "../utils/constants.js";
 import { getFileData, getFilePath } from "../utils/document_handler_utils.js";
@@ -57,10 +56,17 @@ export const documentHandler = async (ctx) => {
         );
 
         // Write to google sheets
+        const sheets = await getSheets();
         const spreadsheetId = "1BeAeCtDqXRzsu2RbI4ITsjuTZ8YyGTqlsTSZDPLWuF4";
         const sheetId = 405710534; // 405710534 - 'Data' sheet & 144983074 - 'Copy of Data' sheet
+        const sheetName = await getSheetName(sheets, spreadsheetId, sheetId);
         const spreadsheetUrl = `https://docs.google.com/spreadsheets/d/${spreadsheetId}/edit#gid=${sheetId}`;
-        await writeDataToGoogleSheets(spreadsheetId, sheetId, records);
+        await writeDataToGoogleSheets(
+            sheets,
+            spreadsheetId,
+            sheetName,
+            records
+        );
 
         // Reply message
         ctx.reply(
@@ -72,13 +78,12 @@ export const documentHandler = async (ctx) => {
     }
 };
 
-const writeDataToGoogleSheets = async (spreadsheetId, sheetId, values) => {
-    // Sheets
-    const client = await getAuthClient();
-    const sheets = google.sheets({ version: "v4", auth: client });
-    const sheetName = await getSheetName(sheets, spreadsheetId, sheetId);
-    logger.info(sheetName);
-
+const writeDataToGoogleSheets = async (
+    sheets,
+    spreadsheetId,
+    sheetName,
+    values
+) => {
     // Write data
     const numRows = values.length;
     const result = await sheets.spreadsheets.values.update({
