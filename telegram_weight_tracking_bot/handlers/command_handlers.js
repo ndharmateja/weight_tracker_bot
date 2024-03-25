@@ -49,7 +49,7 @@ export const documentHandler = async (ctx) => {
 
         // retrieve and parse csv file
         const records = await parseRecordsFromCsv(fileId);
-        logger.info(records);
+        logger.info(`parsed ${records} records from the csv file`);
 
         ctx.reply("received 👍🏽");
     } catch (error) {
