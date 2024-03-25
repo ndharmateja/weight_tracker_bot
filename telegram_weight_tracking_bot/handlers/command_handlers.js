@@ -49,12 +49,48 @@ export const documentHandler = async (ctx) => {
 
         // retrieve and parse csv file
         const records = await parseRecordsFromCsv(fileId);
-        logger.info(`parsed ${records} records from the csv file`);
+        logger.info(`parsed ${records.length} records from the csv file`);
 
-        ctx.reply("received 👍🏽");
+        // Initial messages
+        ctx.reply(
+            "Initialized adding table. Might take a few seconds. Wait for confirmation."
+        );
+
+        // Write to google sheets
+        const spreadsheetId = "1BeAeCtDqXRzsu2RbI4ITsjuTZ8YyGTqlsTSZDPLWuF4";
+        const sheetId = 405710534; // 405710534 - 'Data' sheet & 144983074 - 'Copy of Data' sheet
+        const spreadsheetUrl = `https://docs.google.com/spreadsheets/d/${spreadsheetId}/edit#gid=${sheetId}`;
+        await writeDataToGoogleSheets(spreadsheetId, sheetId, records);
+
+        // Reply message
+        ctx.reply(
+            `Successfully added data\n\nClick [link](${spreadsheetUrl}) to open`
+        );
     } catch (error) {
+        logger.error(error);
         ctx.reply(`Error: ${error.message}`);
     }
+};
+
+const writeDataToGoogleSheets = async (spreadsheetId, sheetId, values) => {
+    // Sheets
+    const client = await getAuthClient();
+    const sheets = google.sheets({ version: "v4", auth: client });
+    const sheetName = await getSheetName(sheets, spreadsheetId, sheetId);
+    logger.info(sheetName);
+
+    // Write data
+    const numRows = values.length;
+    const result = await sheets.spreadsheets.values.update({
+        spreadsheetId,
+        range: `${sheetName}!A1:B${numRows}`,
+        requestBody: {
+            majorDimension: "ROWS",
+            values,
+        },
+        valueInputOption: "USER_ENTERED",
+    });
+    logger.info(result.data);
 };
 
 /**
