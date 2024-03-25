@@ -40,36 +40,20 @@ export const documentHandler = async (ctx) => {
     try {
         // Parse message
         const {
-            document: {
-                file_name: filename,
-                mime_type: mimeType,
-                file_id: fileId,
-            },
+            document: { mime_type: mimeType, file_id: fileId },
         } = ctx.message;
 
         // save file locally
-        await saveFile(filename, mimeType, fileId);
-
-        // read lines
-        const filedata = await fs.readFile(filename);
-        const records = parse(filedata, {
-            columns: true,
-            skip_empty_lines: true,
-        });
+        const records = await getRecordsFromCsv(mimeType, fileId);
         logger.info(records);
 
-        // delete file
-        await fs.unlink(filename);
-        logger.info(`Deleted ${filename}`);
-
-        const replyMessage = filename;
-        ctx.reply(replyMessage);
+        ctx.reply("received 👍🏽");
     } catch (error) {
         ctx.reply(`Error: ${error.message}`);
     }
 };
 
-const saveFile = async (filename, mimeType, fileId) => {
+const getRecordsFromCsv = async (mimeType, fileId) => {
     // Check mime type
     if (mimeType !== CSV_MIME_TYPE) {
         throw new Error("Only csv documents accepted for now.");
@@ -83,7 +67,16 @@ const saveFile = async (filename, mimeType, fileId) => {
     const fileData = await getFileData(filePath);
     logger.info("Got the file data");
 
-    // Write to csv file
-    await fs.writeFile(filename, fileData);
-    logger.info(`${filename} saved`);
+    // Parse csv
+    const records = parse(fileData, {
+        columns: true,
+        skip_empty_lines: true,
+    });
+
+    // convert list of objects into a 2d array
+    // to add to google sheets
+    return [
+        ["Date", "Weight"],
+        ...records.map((record) => [record.Date, record.Weight]),
+    ];
 };
