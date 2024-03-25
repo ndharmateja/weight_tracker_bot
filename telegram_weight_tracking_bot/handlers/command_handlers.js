@@ -47,7 +47,7 @@ export const documentHandler = async (ctx) => {
             throw new Error("Only csv documents accepted for now.");
         }
 
-        // save file locally
+        // retrieve and parse csv file
         const records = await parseRecordsFromCsv(fileId);
         logger.info(records);
 
