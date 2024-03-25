@@ -5,7 +5,6 @@ import { CSV_MIME_TYPE } from "../utils/constants.js";
 import { getFileData, getFilePath } from "../utils/document_handler_utils.js";
 import { require } from "../utils/utils.js";
 const fs = require("fs").promises;
-import { parse } from "csv-parse/sync";
 
 export const startHandler = (ctx) => {
     const {
