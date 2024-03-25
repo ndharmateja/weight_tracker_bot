@@ -88,7 +88,7 @@ export const documentHandler = async (ctx) => {
 
 const replyWeightChart = async (ctx, records) => {
     // get image data
-    imageData = "";
+    const imageData = "";
 
     // save to file
     const imageFilename = "image.png";
