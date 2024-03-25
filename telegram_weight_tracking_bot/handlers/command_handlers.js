@@ -1,7 +1,7 @@
 import { google } from "googleapis";
 import { getAuthClient, getSheetName } from "../utils/google_utils.js";
 import logger from "../utils/logger.js";
-import { XLS_MIME_TYPE, XLS_MIME_TYPE_MOBILE } from "../utils/constants.js";
+import { CSV_MIME_TYPE } from "../utils/constants.js";
 import { getFileData, getFilePath } from "../utils/document_handler_utils.js";
 
 export const startHandler = (ctx) => {
