@@ -1,50 +1,64 @@
 import pandas as pd
 import random
 
-# import data and set index and remove date column
-FOLDER = "."
-df = pd.read_csv(f"{FOLDER}/raw.csv")
-df.index= pd.to_datetime(df["Date"])
 
-# generate daily dates from start to end
-start = df.index[0].date()
-end = df.index[len(df)-1].date()
-new_dates = pd.date_range(start=start,end=end,freq='D')
+DATE = "Date"
+WEIGHT = "Weight"
+INTERPOLATED = "Interpolated"
+WEIGHT_LINEAR = "Weight_linear"
+WEIGHT_NEW = "Weight_new"
 
-# reindex
-df = df.reindex(new_dates)
-df = df.rename_axis('Date')
- 
-# null weights
-nul_data = pd.isnull(df['Weight'])
 
-# add column called interpolated
-df["Interpolated"] = False
-df["Interpolated"][nul_data] = True
+# records:
+# [
+#     ["2022-08-13","108.0"],
+#     ["2022-08-14","107.5"]
+# ]
+def interpolate_data(records):
+    # import data and set index and remove date column
+    headers = [DATE, WEIGHT]
+    df = pd.DataFrame(records, columns=headers)
+    df.index= pd.to_datetime(df[DATE])
+    df[WEIGHT] = df[WEIGHT].astype(float)
 
-# linear interpolation
-df['Weight_linear']= df['Weight'].interpolate(option='linear')
-df["Weight_new"] = df["Weight_linear"]
+    # generate daily dates from start to end
+    start = df.index[0].date()
+    end = df.index[len(df)-1].date()
+    new_dates = pd.date_range(start=start,end=end,freq="D")
 
-# Add randomness to the interpolated data
-for index, row in df.iterrows():
-    if (row["Interpolated"]):
-        # induce a random error normally distributed
-        # and round values to one digit
-        weight = row["Weight_linear"]
-        error = random.normalvariate(0, 0.2)
-        new_weight = round(weight + error, 1)
+    # reindex
+    df = df.reindex(new_dates)
+    df = df.rename_axis(DATE)
+    
+    # null weights
+    nul_data = pd.isnull(df[WEIGHT])
 
-        df.at[index, "Weight_new"] = new_weight
+    # add column called interpolated
+    df[INTERPOLATED] = False
+    df[INTERPOLATED][nul_data] = True
 
-df["Weight"] = df["Weight_new"]
-df.drop(columns=["Date", "Weight_linear", "Weight_new", "Interpolated"], inplace=True)
+    # linear interpolation
+    df[WEIGHT_LINEAR]= df[WEIGHT].interpolate(option="linear")
+    df[WEIGHT_LINEAR] = df[WEIGHT_LINEAR]
 
-# save cleaned and filled data
-df.to_csv(f"{FOLDER}/cleaned.csv")
+    # Add randomness to the interpolated data
+    for index, row in df.iterrows():
+        if (row[INTERPOLATED]):
+            # induce a random error normally distributed
+            # and round values to one digit
+            weight = row[WEIGHT_LINEAR]
+            error = random.normalvariate(0, 0.2)
+            new_weight = round(weight + error, 1)
+
+            df.at[index, WEIGHT_LINEAR] = new_weight
+
+    df[WEIGHT] = df[WEIGHT_LINEAR]
+    df.drop(columns=[DATE, WEIGHT_LINEAR, WEIGHT_LINEAR, INTERPOLATED], inplace=True)
+
+    return df
 
 # plot
-# plt.rcParams['figure.figsize']=(15,7)
-# plt.plot(df['Weight_new'], color='blue')
-# plt.title('Linear Interpolation')
+# plt.rcParams["figure.figsize"]=(15,7)
+# plt.plot(df[WEIGHT_LINEAR], color="blue")
+# plt.title("Linear Interpolation")
 # plt.show()
