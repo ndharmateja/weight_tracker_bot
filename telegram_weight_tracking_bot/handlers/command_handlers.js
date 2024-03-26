@@ -4,6 +4,7 @@ import { CSV_MIME_TYPE } from "../utils/constants.js";
 import { getFileData, getFilePath } from "../utils/document_handler_utils.js";
 import { require } from "../utils/utils.js";
 const fs = require("fs").promises;
+import axios from "axios";
 
 export const startHandler = (ctx) => {
     const {
@@ -74,7 +75,7 @@ export const documentHandler = async (ctx) => {
         );
 
         // reply with chart
-        await replyWeightChart(ctx, records);
+        await replyWeightChart(ctx);
 
         // Reply message
         ctx.replyWithMarkdownV2(
@@ -86,16 +87,23 @@ export const documentHandler = async (ctx) => {
     }
 };
 
-const replyWeightChart = async (ctx, records) => {
+const replyWeightChart = async (ctx) => {
     // get image data
-    const imageData = "";
+    const chartUrl =
+        "https://docs.google.com/spreadsheets/u/1/d/e/2PACX-1vS-NDZWOuVqFAeDe0vozWjzJvvaW23Psmx0wVCgVOTpOh6U0ohhkDY6vtHPEye6YeCXFw0KRX1c_HuW/pubchart?oid=749230327&format=image";
 
     // save to file
+    const { data: imageData } = await axios.get(chartUrl, {
+        responseType: "arraybuffer",
+    });
     const imageFilename = "image.png";
     await fs.writeFile(imageFilename, imageData);
 
     // send photo as reply
-    // await ctx.replyWithPhoto({ source: imageFilename });
+    await ctx.replyWithPhoto(
+        { source: imageFilename },
+        { caption: "Weight timeline" }
+    );
 
     // delete image file
     await fs.unlink(imageFilename);
