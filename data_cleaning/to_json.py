@@ -2,7 +2,7 @@ import json
 import pandas as pd
 
 
-def csv_to_json_file(csv_filepath, json_filepath):
+def convert_csv_to_json(csv_filepath):
     # create a json in the format that "Simple Weight Tracker" app requires
     data = {"settings": [{"key": "goal", "valueFloat": 85}], "version": 0, "weights": []}
 
@@ -15,9 +15,7 @@ def csv_to_json_file(csv_filepath, json_filepath):
         weight = row["Weight"]
         data["weights"].append({"date": timestamp, "weight": weight})
 
-    # data to json file
-    with open(json_filepath, "w") as f:
-        json.dump(data, f, indent=4)
+    return data
 
 
 if __name__ == "__main__":
@@ -27,4 +25,4 @@ if __name__ == "__main__":
     # convert 
     csv_filepath = f"{FOLDER}/cleaned.csv"
     json_filepath = f"{FOLDER}/out.json"
-    csv_to_json_file(csv_filepath, json_filepath)
+    convert_csv_to_json(csv_filepath, json_filepath)
