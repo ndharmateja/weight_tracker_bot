@@ -1,6 +1,7 @@
 from clean import interpolate_data
 from to_json import convert_csv_to_json
 from json import dumps
+import os
 
 # takes in a list of csv records 
 # records:
@@ -45,7 +46,8 @@ def process(records):
     # convert csv data to json
     json_data = convert_csv_to_json(csv_filepath)
 
-    # TODO: delete csv file
+    # delete csv file
+    os.remove(csv_filepath)
 
     return json_data
 
