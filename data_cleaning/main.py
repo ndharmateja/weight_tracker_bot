@@ -2,6 +2,7 @@ from clean import interpolate_data
 from to_json import convert_csv_to_json
 from json import dumps
 import os
+import matplotlib.pyplot as plt
 
 # takes in a list of csv records 
 # records:
@@ -41,7 +42,12 @@ def process(records):
     # save interpolated data
     csv_filepath = "./cleaned.csv"
     df.to_csv(csv_filepath)
-    print(df)
+
+    # plot data and save to file
+    plt.rcParams["figure.figsize"]=(15,7)
+    plt.plot(df["Weight"], color="blue")
+    plt.title("Weight vs Time")
+    plt.savefig("chart.png")
 
     # convert csv data to json
     json_data = convert_csv_to_json(csv_filepath)
