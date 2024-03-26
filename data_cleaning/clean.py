@@ -56,9 +56,3 @@ def interpolate_data(records):
     df.drop(columns=[DATE, WEIGHT_LINEAR, WEIGHT_LINEAR, INTERPOLATED], inplace=True)
 
     return df
-
-# plot
-# plt.rcParams["figure.figsize"]=(15,7)
-# plt.plot(df[WEIGHT_LINEAR], color="blue")
-# plt.title("Linear Interpolation")
-# plt.show()
