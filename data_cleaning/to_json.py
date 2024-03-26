@@ -22,7 +22,7 @@ def csv_to_json_file(csv_filepath, json_filepath):
 
 if __name__ == "__main__":
     # folder
-    FOLDER = "data_cleaning"   
+    FOLDER = "."   
 
     # convert 
     csv_filepath = f"{FOLDER}/cleaned.csv"

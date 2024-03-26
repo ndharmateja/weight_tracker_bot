@@ -2,7 +2,7 @@ import pandas as pd
 import random
 
 # import data and set index and remove date column
-FOLDER = "data_cleaning"
+FOLDER = "."
 df = pd.read_csv(f"{FOLDER}/raw.csv")
 df.index= pd.to_datetime(df["Date"])
 
