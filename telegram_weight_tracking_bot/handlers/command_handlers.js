@@ -54,8 +54,11 @@ export const documentHandler = async (ctx) => {
         }
 
         // retrieve and parse csv file
-        const records = await parseRecordsFromCsv(fileId);
-        logger.info(`parsed ${records.length} records from the csv file`);
+        let records = await parseRecordsFromCsv(fileId);
+        records = addReversedRecords(records);
+        logger.info(
+            `parsed ${records.length - 1} weight records from the csv file`
+        );
 
         // Initial messages
         ctx.reply(
@@ -86,6 +89,38 @@ export const documentHandler = async (ctx) => {
         logger.error(error);
         ctx.reply(`Error: ${error.message}`);
     }
+};
+
+/**
+ *
+ * @param {*} records
+ * [
+ *  ["Date", "Weight"],
+ *  ["2022-08-13", "108"],
+ *  ["2022-08-14", "107"],
+ *  ["2022-08-15", "105"],
+ * ]
+ *
+ * @returns
+ * [
+ *  ["Date", "Weight", "Date", "Weight"],
+ *  ["2022-08-15", "105", "2022-08-13", "108"],
+ *  ["2022-08-14", "107", "2022-08-14", "107"],
+ *  ["2022-08-13", "108", "2022-08-15", "105"],
+ * ]
+ *
+ */
+const addReversedRecords = (records) => {
+    const [headers, ...recordsValues] = records;
+    recordsValues.reverse();
+    const reverseRecords = [headers, ...recordsValues];
+
+    const newRecords = [];
+    for (let i in records) {
+        newRecords.push([...records[i], ...reverseRecords[i]]);
+    }
+
+    return newRecords;
 };
 
 const replyWeightChart = async (ctx) => {
@@ -120,7 +155,7 @@ const writeDataToGoogleSheets = async (
     const numRows = values.length;
     await sheets.spreadsheets.values.update({
         spreadsheetId,
-        range: `${sheetName}!A1:B${numRows}`,
+        range: `${sheetName}!A1:D${numRows}`,
         requestBody: {
             majorDimension: "ROWS",
             values,
