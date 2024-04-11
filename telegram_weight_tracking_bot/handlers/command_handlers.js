@@ -5,6 +5,7 @@ import { getFileData, getFilePath } from "../utils/document_handler_utils.js";
 import { require } from "../utils/utils.js";
 const fs = require("fs").promises;
 import axios from "axios";
+import { SHEET_ID, SPREADSHEET_ID } from "../utils/config.js";
 
 export const startHandler = (ctx) => {
     const {
@@ -63,8 +64,8 @@ export const documentHandler = async (ctx) => {
 
         // Write to google sheets
         const sheets = await getSheets();
-        const spreadsheetId = "1BeAeCtDqXRzsu2RbI4ITsjuTZ8YyGTqlsTSZDPLWuF4";
-        const sheetId = 405710534; // 405710534 - 'Data' sheet & 144983074 - 'Copy of Data' sheet
+        const spreadsheetId = SPREADSHEET_ID;
+        const sheetId = SHEET_ID;
         const sheetName = await getSheetName(sheets, spreadsheetId, sheetId);
         const spreadsheetUrl = `https://docs.google.com/spreadsheets/d/${spreadsheetId}/edit#gid=${sheetId}`;
         await writeDataToGoogleSheets(
