@@ -17,3 +17,5 @@ const DEV_ENV = "dev";
 const env = process.env.NODE_ENV || PROD_ENV;
 export const isProd = () => env === PROD_ENV;
 export const isDev = () => env === DEV_ENV;
+export const SHEET_ID = isProd() ? PROD_SHEET_ID : DEV_SHEET_ID;
+export const SPREADSHEET_ID = process.env.SPREADSHEET_ID;
