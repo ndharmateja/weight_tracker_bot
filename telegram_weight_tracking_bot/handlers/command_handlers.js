@@ -119,7 +119,7 @@ const addReversedRecords = (records) => {
 
     const newRecords = [];
     for (let i in records) {
-        newRecords.push([...records[i], ...reverseRecords[i]]);
+        newRecords.push([...reverseRecords[i], ...records[i]]);
     }
 
     return newRecords;
