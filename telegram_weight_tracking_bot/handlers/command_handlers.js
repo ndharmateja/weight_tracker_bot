@@ -62,7 +62,9 @@ export const documentHandler = async (ctx) => {
 
         // Initial messages
         ctx.reply(
-            "Initialized adding data. Might take a few seconds. Wait for confirmation."
+            `Parsed ${
+                records.length - 1
+            } weight entries.\n\nInitialized adding data. Might take a few seconds. Wait for confirmation.`
         );
 
         // Write to google sheets
