@@ -186,9 +186,15 @@ const parseRecordsFromCsv = async (fileId) => {
     const fileData = await getFileData(filePath);
     logger.info("Got the file data");
 
-    // parse csv
-    return fileData
+    // parse csv string
+    // 1. trims to remove space at end
+    // 2. splits by new line
+    // 3. maps each line to list of strings split by "," (each of those
+    // list of strings are also trimmed)
+    const records = fileData
         .toString()
+        .trim()
         .split("\n")
-        .map((line) => line.split(","));
+        .map((line) => line.split(",").map((item) => item.trim()));
+    return records;
 };
