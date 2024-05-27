@@ -34,11 +34,17 @@ bot.on(message("document"), documentHandler);
 
 // Launch bot
 if (isProd()) {
-    logger.info("launching bot in prod mode");
-    const webhookDomain = "https://weight-tracker-telegram-bot.onrender.com";
-    bot.launch({ webhook: { domain: webhookDomain, port: PORT } }).then(() =>
-        logger.info("Webhook bot listening on port", PORT)
-    );
+    try {
+        logger.info("launching bot in prod mode");
+        const webhookDomain =
+            "https://weight-tracker-telegram-bot.onrender.com";
+        bot.launch({ webhook: { domain: webhookDomain, port: PORT } }).then(
+            () => logger.info("Webhook bot listening on port", PORT)
+        );
+        logger.info("launched bot in prod mode");
+    } catch (error) {
+        logger.error("Error: ", error.message);
+    }
 } else if (isDev()) {
     logger.info("launching bot in dev mode (polling)");
     await bot.launch();
