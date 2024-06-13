@@ -20,13 +20,16 @@ export const getFileData = async (filePath) => {
 // Reference 1: https://stackoverflow.com/a/50220546
 // Reference 2: https://stackoverflow.com/a/60468824
 export const getFilePath = async (fileId) => {
-    const { data: filePathData } = await axios.get(
-        `${TELEGRAM_API_BASEURL}/bot${TELEGRAM_BOT_TOKEN}/getFile?file_id=${fileId}`
-    );
-    if (!filePathData.ok) throw new Error("Error getting file path");
-
-    const {
-        result: { file_path: filePath },
-    } = filePathData;
-    return filePath;
+    try {
+        const { data: filePathData } = await axios.get(
+            `${TELEGRAM_API_BASEURL}/bot${TELEGRAM_BOT_TOKEN}/getFile?file_id=${fileId}`
+        );
+        if (!filePathData.ok) throw new Error("Error getting file path");
+        const {
+            result: { file_path: filePath },
+        } = filePathData;
+        return filePath;
+    } catch (error) {
+        logger.error("Error:", error.message);
+    }
 };
